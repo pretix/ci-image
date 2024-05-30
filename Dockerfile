@@ -16,7 +16,7 @@ RUN apt-get update && \
 		rm -rf /var/lib/apt/lists/* && \
 		dpkg-reconfigure locales && \
 		locale-gen C.UTF-8 && \
-		/usr/sbin/update-locale LANG=C.UTF-8 && \
+		/usr/sbin/update-locale LANG=C.UTF-8
 
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
