@@ -10,7 +10,7 @@ RUN apt-get update && \
 	    libmemcached-dev libjpeg-dev libpq-dev pdftk bzip2 \
 	    wget tar openssh-client libmaxminddb0 libmaxminddb-dev \
 	    libluajit-5.1-dev pkg-config libxmlsec1-dev libxmlsec1-openssl nodejs npm \
-		enchant aspell-en rsync sudo \
+		aspell-en rsync sudo \
 	    --no-install-recommends && \
 		apt-get clean && \
 		rm -rf /var/lib/apt/lists/* && \
