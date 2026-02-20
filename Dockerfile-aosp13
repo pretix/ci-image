@@ -1,0 +1,89 @@
+FROM ubuntu:22.04
+
+RUN apt-get update && \
+	apt-get install -y \
+		android-sdk-libsparse-utils \
+		bc \
+		bison \
+		build-essential \
+		clang \
+		cpio \
+		curl \
+		device-tree-compiler \
+		dwarves \
+		flex \
+		fontconfig \
+		gcc-multilib \
+		gdisk \
+		git \
+		git-core \
+		gnupg \
+		lib32z1-dev \
+		libc6-dev-i386 \
+		libdw-dev \
+		libgl1-mesa-dev \
+		liblz4-tool \
+		liblz-dev \
+		liblzo2-2 \
+		liblzo2-dev \
+		libncurses5 \
+		libssl-dev \
+		libx11-dev \
+		libxml2-utils \
+		locales \
+		lz4 \
+		lzop \
+		m4 \
+		make \
+		mtd-utils \
+		ninja-build \
+		rsync \
+		swig \
+		tar \
+		u-boot-tools \
+		unzip \
+		uuid \
+		uuid-dev \
+		x11proto-core-dev \
+		xsltproc \
+		zip \
+		zlib1g-dev \
+	    --no-install-recommends && \
+	apt-get clean && \
+	rm -rf /var/lib/apt/lists/* && \
+	dpkg-reconfigure locales && \
+	locale-gen C.UTF-8 && \
+	/usr/sbin/update-locale LANG=C.UTF-8
+
+RUN export REPO=$(mktemp /tmp/repo.XXXXXXXXX) && \
+	curl -o ${REPO} https://storage.googleapis.com/git-repo-downloads/repo && \
+	gpg --recv-keys 8BB9AD793E8E6153AF0F9A4416530D5E920F5C65 && \
+	curl -s https://storage.googleapis.com/git-repo-downloads/repo.asc | gpg --verify - ${REPO} && install -m 755 ${REPO} /usr/bin/repo
+
+RUN cd /opt && \
+	curl -Lo gcc1.tar.xz https://mirrors.dotsrc.org/armbian-dl/_toolchain/gcc-arm-9.2-2019.12-x86_64-aarch64-none-linux-gnu.tar.xz && \
+	tar -xf gcc1.tar.xz && \
+	rm gcc1.tar.xz
+
+RUN cd /opt && \
+	curl -Lo gcc2.tar.bz2 "https://developer.arm.com/-/media/Files/downloads/gnu-rm/7-2018q2/gcc-arm-none-eabi-7-2018-q2-update-linux.tar.bz2?rev=bc2c96c014b54bb49f18bceb4050fee7&revision=bc2c96c0-14b5-4bb4-9f18-bceb4050fee7?product=GNU%20Arm%20Embedded%20Toolchain%20Downloads,64-bit,,Linux,7-2018-q2-update" && \
+	tar -xf gcc2.tar.bz2 && \
+	rm gcc2.tar.bz2
+
+RUN cd /opt && \
+    curl -Lo clang.tar.gz "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/d20e409261d6ad80a0c29ac2055bf5c3bb996ef4.tar.gz" && \    
+    mkdir /opt/prebuilt-android-clang && \
+    tar -xf clang.tar.gz -C /opt/prebuilt-android-clang && \
+    rm clang.tar.gz
+
+RUN cd /opt && \
+     curl -Lo tools.tar.gz "https://android.googlesource.com/kernel/prebuilts/build-tools/+archive/e3f6a8c059b94f30f7184a7d335876f8a13a2366.tar.gz" && \    
+     mkdir /opt/prebuilt-android-kernel-build-tools && \
+     tar -xf tools.tar.gz -C /opt/prebuilt-android-kernel-build-tools && \
+     rm tools.tar.gz
+
+ENV AARCH64_GCC_CROSS_COMPILE=/opt/gcc-arm-9.2-2019.12-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-
+ENV CLANG_PATH=/opt/prebuilt-android-clang
+ENV PATH="/opt/prebuilt-android-kernel-build-tools/linux-x86/bin:$PATH"
+ENV ARMGCC_DIR=/opt/gcc-arm-none-eabi-7-2018-q2-update
+
