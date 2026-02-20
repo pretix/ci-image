@@ -6,6 +6,7 @@ RUN apt-get update && \
 		bc \
 		bison \
 		build-essential \
+		ca-certificates \
 		clang \
 		cpio \
 		curl \
