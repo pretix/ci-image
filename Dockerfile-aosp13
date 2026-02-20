@@ -38,9 +38,9 @@ RUN apt-get update && \
 		make \
 		mtd-utils \
 		ninja-build \
+		openssh-client \
 		rsync \
 		swig \
-		ssh \
 		tar \
 		u-boot-tools \
 		unzip \
