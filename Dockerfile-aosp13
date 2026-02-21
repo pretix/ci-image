@@ -58,6 +58,12 @@ RUN apt-get update && \
 	locale-gen C.UTF-8 && \
 	/usr/sbin/update-locale LANG=C.UTF-8
 
+RUN curl -L --output glab.tar.gz https://gitlab.com/gitlab-org/cli/-/releases/v1.86.0/downloads/glab_1.86.0_linux_amd64.tar.gz && \
+	echo "ea2ab46b4eace60407edbea90c5bdb0c5b42400e8d047a20c6f6f0d3ec6fc281  glab.tar.gz" | sha256sum -c && \
+	tar xzf glab.tar.gz && \
+	mv bin/glab /usr/bin/glab && \
+	rm glab.tar.gz
+
 RUN export REPO=$(mktemp /tmp/repo.XXXXXXXXX) && \
 	curl -o ${REPO} https://storage.googleapis.com/git-repo-downloads/repo && \
 	gpg --recv-keys 8BB9AD793E8E6153AF0F9A4416530D5E920F5C65 && \
