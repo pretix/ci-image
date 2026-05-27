@@ -7,7 +7,7 @@ RUN apt-get update && \
 	apt-get install -y git \
 	    libxml2-dev libxslt1-dev python3-virtualenv locales libffi-dev \
      	build-essential python3-dev zlib1g-dev libssl-dev gettext git ghostscript \
-	    libmemcached-dev libjpeg-dev libpq-dev pdftk bzip2 \
+	    libmemcached-dev libjpeg-dev libpq-dev pdftk bzip2 libatk1.0-0t64 \
 	    wget tar openssh-client libmaxminddb0 libmaxminddb-dev \
 	    libluajit-5.1-dev pkg-config libxmlsec1-dev libxmlsec1-openssl nodejs npm \
 		aspell-en rsync sudo \
