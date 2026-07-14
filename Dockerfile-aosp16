@@ -15,13 +15,10 @@ RUN apt-get update && \
 		dwarves \
 		flex \
 		fontconfig \
-		gcc-multilib \
 		gdisk \
 		git \
 		git-core \
 		gnupg \
-		lib32z1-dev \
-		libc6-dev-i386 \
 		libdw-dev \
 		libelf-dev \
 		libgl1-mesa-dev \
@@ -86,25 +83,25 @@ RUN curl -L -o aarch64.tar.xz https://developer.arm.com/-/media/files/downloads/
 
 RUN cd /opt && \
     curl -Lo clang.tar.gz "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/9a98ca4072ec000f301bd3ece481ea2baca76ca5.tar.gz" && \    
-    mkdir /opt/android-kernel-prebuilts-6.12/clang/host/linux-x86 && \
+    mkdir -p /opt/android-kernel-prebuilts-6.12/clang/host/linux-x86 && \
     tar -xf clang.tar.gz -C /opt/android-kernel-prebuilts-6.12/clang/host/linux-x86 && \
     rm clang.tar.gz
 
 RUN cd /opt && \
      curl -Lo tools.tar.gz "https://android.googlesource.com/kernel/prebuilts/build-tools/+archive/e65603ef822477b059f35d8c6ac2be6b2113e14f.tar.gz" && \    
-     mkdir /opt/android-kernel-prebuilts-6.12/kernel-build-tools && \
+     mkdir -p /opt/android-kernel-prebuilts-6.12/kernel-build-tools && \
      tar -xf tools.tar.gz -C /opt/android-kernel-prebuilts-6.12/kernel-build-tools && \
      rm tools.tar.gz
 
 RUN cd /opt && \
      curl -Lo rust.tar.gz "https://android.googlesource.com/platform/prebuilts/rust/+archive/8d38f3f31e9a0c9a5cb537b9f73da400bedb9a75.tar.gz" && \    
-     mkdir /opt/android-kernel-prebuilts-6.12/rust && \
+     mkdir -p /opt/android-kernel-prebuilts-6.12/rust && \
      tar -xf rust.tar.gz -C /opt/android-kernel-prebuilts-6.12/rust && \
      rm rust.tar.gz
 
 RUN cd /opt && \
     curl -Lo clang-tools.tar.gz "https://android.googlesource.com/platform/prebuilts/clang-tools/+archive/edb3c73c0398462492e7371fae68ce2db7afb6c7.tar.gz" && \    
-    mkdir /opt/android-kernel-prebuilts-6.12/clang-tools && \
+    mkdir -p /opt/android-kernel-prebuilts-6.12/clang-tools && \
     tar -xf clang-tools.tar.gz -C /opt/android-kernel-prebuilts-6.12/clang-tools && \
     rm clang-tools.tar.gz
 
