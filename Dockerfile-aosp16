@@ -1,0 +1,114 @@
+FROM ubuntu:22.04
+
+RUN apt-get update && \
+	apt-get install -y \
+		android-sdk-libsparse-utils \
+		bc \
+		bison \
+		build-essential \
+		ca-certificates \
+		ccache \
+		clang \
+		cpio \
+		curl \
+		device-tree-compiler \
+		dwarves \
+		flex \
+		fontconfig \
+		gcc-multilib \
+		gdisk \
+		git \
+		git-core \
+		gnupg \
+		lib32z1-dev \
+		libc6-dev-i386 \
+		libdw-dev \
+		libelf-dev \
+		libgl1-mesa-dev \
+		libgnutls28-dev \
+		liblz4-tool \
+		liblz-dev \
+		liblzo2-2 \
+		liblzo2-dev \
+		libncurses5 \
+		libssl-dev \
+		libx11-dev \
+		libxml2-utils \
+		locales \
+		lz4 \
+		lzop \
+		m4 \
+		make \
+		mtd-utils \
+		ninja-build \
+		openssh-client \
+		rsync \
+		swig \
+		tar \
+		u-boot-tools \
+		unzip \
+		uuid \
+		uuid-dev \
+		x11proto-core-dev \
+		xsltproc \
+		xxd \
+		zip \
+		zlib1g-dev \
+	    --no-install-recommends && \
+	apt-get clean && \
+	rm -rf /var/lib/apt/lists/* && \
+	dpkg-reconfigure locales && \
+	locale-gen C.UTF-8 && \
+	/usr/sbin/update-locale LANG=C.UTF-8
+
+RUN cd /root && \
+	curl -L --output glab.tar.gz https://gitlab.com/gitlab-org/cli/-/releases/v1.86.0/downloads/glab_1.86.0_linux_amd64.tar.gz && \
+	echo "ea2ab46b4eace60407edbea90c5bdb0c5b42400e8d047a20c6f6f0d3ec6fc281  glab.tar.gz" | sha256sum -c && \
+	tar xzf glab.tar.gz && \
+	mv bin/glab /usr/bin/glab && \
+	rm glab.tar.gz && \
+	cd /
+
+RUN export REPO=$(mktemp /tmp/repo.XXXXXXXXX) && \
+	curl -o ${REPO} https://storage.googleapis.com/git-repo-downloads/repo && \
+	gpg --recv-keys 8BB9AD793E8E6153AF0F9A4416530D5E920F5C65 && \
+	curl -s https://storage.googleapis.com/git-repo-downloads/repo.asc | gpg --verify - ${REPO} && install -m 755 ${REPO} /usr/bin/repo
+
+curl -L -o aarch32.tar.xz https://developer.arm.com/-/media/files/downloads/gnu/12.3.rel1/binrel/arm-gnu-toolchain-12.3.rel1-x86_64-arm-none-eabi.tar.xz && \
+    tar -xf aarch32.tar.xz -C /opt && \
+    rm aarch32.tar.xz
+
+curl -L -o aarch64.tar.xz https://developer.arm.com/-/media/files/downloads/gnu/12.3.rel1/binrel/arm-gnu-toolchain-12.3.rel1-x86_64-aarch64-none-linux-gnu.tar.xz && \
+	tar -xf aarch64.tar.xz -C /opt && \
+    rm aarch64.tar.xz
+
+## see ./device/nxp/common/tools/setup_android_kernel_prebuilts.sh:
+
+RUN cd /opt && \
+    curl -Lo clang.tar.gz "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/9a98ca4072ec000f301bd3ece481ea2baca76ca5.tar.gz" && \    
+    mkdir /opt/android-kernel-prebuilts-6.12/clang/host/linux-x86 && \
+    tar -xf clang.tar.gz -C /opt/android-kernel-prebuilts-6.12/clang/host/linux-x86 && \
+    rm clang.tar.gz
+
+RUN cd /opt && \
+     curl -Lo tools.tar.gz "https://android.googlesource.com/kernel/prebuilts/build-tools/+archive/e65603ef822477b059f35d8c6ac2be6b2113e14f.tar.gz" && \    
+     mkdir /opt/android-kernel-prebuilts-6.12/kernel-build-tools && \
+     tar -xf tools.tar.gz -C /opt/android-kernel-prebuilts-6.12/kernel-build-tools && \
+     rm tools.tar.gz
+
+RUN cd /opt && \
+     curl -Lo rust.tar.gz "https://android.googlesource.com/platform/prebuilts/rust/+archive/8d38f3f31e9a0c9a5cb537b9f73da400bedb9a75.tar.gz" && \    
+     mkdir /opt/android-kernel-prebuilts-6.12/rust && \
+     tar -xf rust.tar.gz -C /opt/android-kernel-prebuilts-6.12/rust && \
+     rm rust.tar.gz
+
+RUN cd /opt && \
+    curl -Lo clang-tools.tar.gz "https://android.googlesource.com/platform/prebuilts/clang-tools/+archive/edb3c73c0398462492e7371fae68ce2db7afb6c7.tar.gz" && \    
+    mkdir /opt/android-kernel-prebuilts-6.12/clang-tools && \
+    tar -xf clang-tools.tar.gz -C /opt/android-kernel-prebuilts-6.12/clang-tools && \
+    rm clang-tools.tar.gz
+
+ENV AARCH32_GCC_CROSS_COMPILE=/opt/arm-gnu-toolchain-12.3.rel1-x86_64-arm-none-eabi/bin/arm-none-eabi-
+ENV AARCH64_GCC_CROSS_COMPILE=/opt/arm-gnu-toolchain-12.3.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-
+ENV KERNEL_PREBUILTS_PATH=/opt/android-kernel-prebuilts-6.12
+ENV PATH="$PATH:/opt/arm-gnu-toolchain-12.3.rel1-x86_64-aarch64-none-linux-gnu/bin/"
