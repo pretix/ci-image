@@ -1,0 +1,53 @@
+name: Docker build
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  DOCKER_REPOSITORY_NAME: pretix/ci-image
+
+jobs:
+  autobuild:
+    strategy:
+      matrix:
+        image: ["pretix", "aosp13", "aosp16", "kaniko"]
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
+
+      - name: Generate Docker image tags
+        id: meta
+        uses: docker/metadata-action@c1e51972afc2121e065aed6d45c65596fe445f3f # v5.8.0
+        with:
+          images: ${{ env.DOCKER_REPOSITORY_NAME }}
+          tags: |
+            # set latest tag for main branch
+            type=raw,value=${{ case(
+                matrix.image == 'pretix', 'latest',
+                matrix.image
+            ) }},enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Build and tag Docker image
+        uses: docker/build-push-action@ca052bb54ab0790a636c9b5f226502c73d547a25 # v5
+        with:
+          context: .
+          file: ${{ case(
+                matrix.image == 'pretix', 'Dockerfile',
+                format('Dockerfile-{0}', matrix.image)
+            ) }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
