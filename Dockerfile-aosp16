@@ -19,6 +19,7 @@ RUN apt-get update && \
 		git \
 		git-core \
 		gnupg \
+		jq \
 		libdw-dev \
 		libelf-dev \
 		libgl1-mesa-dev \
@@ -39,6 +40,7 @@ RUN apt-get update && \
 		mtd-utils \
 		ninja-build \
 		openssh-client \
+		python3-six \
 		rsync \
 		swig \
 		tar \
